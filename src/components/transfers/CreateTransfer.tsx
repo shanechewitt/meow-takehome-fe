@@ -1,39 +1,8 @@
 'use client';
 
+import { TransferService } from '@/services/transfer-service';
+import { TransferCreate } from '@/types/transfers';
 import React, { useState } from 'react';
-
-const mockCustomers = [
-	{
-		id: '1',
-		name: 'Shane Hewitt',
-		accounts: [
-			{
-				id: '1',
-				name: 'Business 1',
-				accountNumber: '****1234',
-				routingNumber: '****5678',
-			},
-			{
-				id: '2',
-				name: 'Business 2',
-				accountNumber: '****5678',
-				routingNumber: '****1234',
-			},
-		],
-	},
-	{
-		id: '2',
-		name: 'Jane Smith',
-		accounts: [
-			{
-				id: '3',
-				name: 'Business 1',
-				accountNumber: '****9012',
-				routingNumber: '****3456',
-			},
-		],
-	},
-];
 
 const CreateTransfer: React.FC = () => {
 	const [fromAccountNumber, setFromAccountNumber] = useState('');
@@ -42,15 +11,40 @@ const CreateTransfer: React.FC = () => {
 	const [toRoutingNumber, setToRoutingNumber] = useState('');
 	const [amount, setAmount] = useState('');
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		console.log({
-			fromAccountNumber,
-			fromRoutingNumber,
-			toAccountNumber,
-			toRoutingNumber,
-			amount,
-		});
+		setError(null);
+		setIsLoading(true);
+
+		try {
+			const transferData: TransferCreate = {
+				sending_account_number: fromAccountNumber,
+				sending_routing_number: fromRoutingNumber,
+				receiving_account_number: toAccountNumber,
+				receiving_routing_number: toRoutingNumber,
+				transfer_amount: parseFloat(amount),
+			};
+
+			await TransferService.createTransfer(transferData);
+
+			// Clear form after successful submission
+			setFromAccountNumber('');
+			setFromRoutingNumber('');
+			setToAccountNumber('');
+			setToRoutingNumber('');
+			setAmount('');
+
+			// You might want to add a success message or redirect here
+		} catch (err) {
+			setError(
+				err instanceof Error ? err.message : 'Failed to create transfer'
+			);
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	return (
