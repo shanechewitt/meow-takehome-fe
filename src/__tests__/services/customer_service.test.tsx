@@ -53,4 +53,32 @@ describe('CustomerService', () => {
 			);
 		});
 	});
+
+	describe('create', () => {
+		it('should create customer', async () => {
+			// Arrange
+			const mockCustomer = {
+				id: 1,
+				name: 'Test Customer',
+			};
+			(fetch as jest.Mock).mockResolvedValueOnce({
+				ok: true,
+				json: () => Promise.resolve(mockCustomer),
+			});
+			// Act
+			const result = await CustomerService.create({ name: 'Test Customer' });
+			// Assert
+			expect(result).toEqual(mockCustomer);
+		});
+		it('should handle API error', async () => {
+			// Arrange
+			(fetch as jest.Mock).mockResolvedValueOnce({
+				ok: false,
+			});
+			// Act, Assert
+			await expect(
+				CustomerService.create({ name: 'Test Customer' })
+			).rejects.toThrow('Failed to create customer');
+		});
+	});
 });

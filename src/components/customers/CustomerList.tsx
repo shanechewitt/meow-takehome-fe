@@ -11,20 +11,38 @@ const CustomerList: React.FC = () => {
 	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 	const [customers, setCustomers] = useState<Customer[]>([]);
 
-	const handleCreateCustomer = (customerData: { name: string }) => {
-		// const newCustomer = {
-		// 	id: (customers.length + 1).toString(),
-		// 	name: customerData.name,
-		// };
-		// setCustomers([...customers, newCustomer]);
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+
+	const handleCreateCustomer = async (customerData: { name: string }) => {
+		try {
+			setIsLoading(true);
+			await CustomerService.create(customerData);
+		} catch (err) {
+			setError(
+				err instanceof Error ? err.message : 'Failed to create customer'
+			);
+		} finally {
+			setIsLoading(false);
+			fetchData();
+		}
+	};
+
+	const fetchData = async () => {
+		try {
+			setIsLoading(true);
+			const response = await CustomerService.getCustomerList();
+			setCustomers(response);
+		} catch (err) {
+			setError(
+				err instanceof Error ? err.message : 'Failed to get customer list'
+			);
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	useEffect(() => {
-		const fetchData = async () => {
-			const response = await CustomerService.getCustomerList();
-			setCustomers(response);
-		};
-
 		fetchData();
 	}, []);
 
