@@ -6,6 +6,7 @@ import CustomerCreateModal from './CreateCustomerModal';
 import { CustomerService } from '@/services/customer-service';
 import { Customer } from '@/types/customers';
 import CustomerListItem from './CustomerListItem';
+import LoadingSpinner from '../common/LoadingSpinner';
 
 const CustomerList: React.FC = () => {
 	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -48,6 +49,7 @@ const CustomerList: React.FC = () => {
 
 	return (
 		<div className='px-8 py-16'>
+			{isLoading && <LoadingSpinner />}
 			<div className='flex items-center justify-between'>
 				<h2 className='text-2xl font-semibold text-gray-900 py-2'>
 					Customer List
@@ -80,6 +82,12 @@ const CustomerList: React.FC = () => {
 					))}
 				</div>
 			</div>
+
+			{error && (
+				<div className='mb-8 p-4 bg-red-50 border border-red-200 rounded-md'>
+					<p className='text-red-600'>{error}</p>
+				</div>
+			)}
 
 			<CustomerCreateModal
 				isOpen={isCreateModalOpen}

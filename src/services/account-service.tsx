@@ -17,7 +17,8 @@ export class AccountService {
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to create account');
+				const errorResponse = await response.json();
+				throw new Error(errorResponse.detail || 'Failed to create account');
 			}
 
 			return await response.json();
@@ -40,7 +41,8 @@ export class AccountService {
 			);
 
 			if (!response.ok) {
-				throw new Error('Failed to get accounts');
+				const errorResponse = await response.json();
+				throw new Error(errorResponse.detail || 'Failed to get accounts');
 			}
 
 			return await response.json();
@@ -66,7 +68,10 @@ export class AccountService {
 			);
 
 			if (!response.ok) {
-				throw new Error('Failed to get account balance');
+				const errorResponse = await response.json();
+				throw new Error(
+					errorResponse.detail || 'Failed to get account balance'
+				);
 			}
 
 			return await response.json();

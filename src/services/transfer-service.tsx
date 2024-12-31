@@ -17,7 +17,9 @@ export class TransferService {
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to create transfer');
+				const errorResponse = await response.json();
+				console.log(errorResponse);
+				throw new Error(errorResponse.detail || 'Failed to create transfer');
 			}
 
 			return await response.text();
@@ -42,7 +44,10 @@ export class TransferService {
 			);
 
 			if (!response.ok) {
-				throw new Error('Failed to fetch transfer history');
+				const errorResponse = await response.json();
+				throw new Error(
+					errorResponse.detail || 'Failed to fetch transfer history'
+				);
 			}
 
 			return await response.json();

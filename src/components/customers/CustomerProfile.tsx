@@ -7,6 +7,7 @@ import { AccountCreate, AccountInfo } from '@/types/accounts';
 import { AccountService } from '@/services/account-service';
 import { CustomerService } from '@/services/customer-service';
 import BankAccountListItem from '../accounts/AccountListItem';
+import LoadingSpinner from '../common/LoadingSpinner';
 
 const CustomerProfile: React.FC<{ customerId: number }> = ({ customerId }) => {
 	const [isNewAccountModalOpen, setIsNewAccountModalOpen] = useState(false);
@@ -54,7 +55,6 @@ const CustomerProfile: React.FC<{ customerId: number }> = ({ customerId }) => {
 		try {
 			setIsLoading(true);
 
-			// First API call
 			const customerData = await CustomerService.get(customerId);
 			setCustomerInfo(customerData);
 
@@ -74,6 +74,7 @@ const CustomerProfile: React.FC<{ customerId: number }> = ({ customerId }) => {
 
 	return (
 		<div className='min-h-screen bg-gray-100'>
+			{isLoading && <LoadingSpinner />}
 			<div className='p-8'>
 				<div className='mb-8'>
 					<h2 className='text-2xl font-semibold text-gray-900'>
@@ -108,6 +109,11 @@ const CustomerProfile: React.FC<{ customerId: number }> = ({ customerId }) => {
 						</div>
 					</div>
 				</div>
+				{error && (
+					<div className='mb-8 p-4 bg-red-50 border border-red-200 rounded-md'>
+						<p className='text-red-600'>{error}</p>
+					</div>
+				)}
 			</div>
 
 			<NewAccountModal

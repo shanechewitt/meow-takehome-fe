@@ -16,7 +16,8 @@ export class CustomerService {
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to get customer list');
+				const errorResponse = await response.json();
+				throw new Error(errorResponse.detail || 'Failed to get customer list');
 			}
 
 			return await response.json();
@@ -37,7 +38,8 @@ export class CustomerService {
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to create customer');
+				const errorResponse = await response.json();
+				throw new Error(errorResponse.detail || 'Failed to create customer');
 			}
 
 			return await response.json();
@@ -57,7 +59,8 @@ export class CustomerService {
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to get customer info');
+				const errorResponse = await response.json();
+				throw new Error(errorResponse.detail || 'Failed to get customer info');
 			}
 
 			return await response.json();

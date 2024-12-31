@@ -3,6 +3,7 @@
 import { TransferService } from '@/services/transfer-service';
 import { TransferCreate } from '@/types/transfers';
 import React, { useState } from 'react';
+import LoadingSpinner from '../common/LoadingSpinner';
 
 const CreateTransfer: React.FC = () => {
 	const [fromAccountNumber, setFromAccountNumber] = useState('');
@@ -13,11 +14,13 @@ const CreateTransfer: React.FC = () => {
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [isSuccess, setIsSuccess] = useState(false);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError(null);
 		setIsLoading(true);
+		setIsSuccess(false);
 
 		try {
 			const transferData: TransferCreate = {
@@ -30,14 +33,13 @@ const CreateTransfer: React.FC = () => {
 
 			await TransferService.createTransfer(transferData);
 
-			// Clear form after successful submission
+			setIsSuccess(true);
+
 			setFromAccountNumber('');
 			setFromRoutingNumber('');
 			setToAccountNumber('');
 			setToRoutingNumber('');
 			setAmount('');
-
-			// You might want to add a success message or redirect here
 		} catch (err) {
 			setError(
 				err instanceof Error ? err.message : 'Failed to create transfer'
@@ -153,13 +155,29 @@ const CreateTransfer: React.FC = () => {
 						<div className='flex justify-end pt-6 border-t border-gray-200'>
 							<button
 								type='submit'
-								className='px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700'
+								disabled={isLoading}
+								className={`px-4 py-2 rounded-md text-white ${
+									isLoading
+										? 'bg-blue-400 cursor-not-allowed'
+										: 'bg-blue-600 hover:bg-blue-700'
+								}`}
 							>
-								Create Transfer
+								{isLoading ? <LoadingSpinner /> : 'Create Transfer'}
 							</button>
 						</div>
 					</form>
 				</div>
+
+				{error && (
+					<div className='mb-8 p-4 bg-red-50 border border-red-200 rounded-md'>
+						<p className='text-red-600'>{error}</p>
+					</div>
+				)}
+				{isSuccess && (
+					<div className='mt-4 p-4 bg-green-50 border border-green-200 rounded-md'>
+						<p className='text-green-600'>Transfer created successfully!</p>
+					</div>
+				)}
 			</div>
 		</div>
 	);
