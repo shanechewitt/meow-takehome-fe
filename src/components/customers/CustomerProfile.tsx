@@ -2,11 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
-import Link from 'next/link';
 import NewAccountModal from '../accounts/NewAccountModal';
 import { AccountCreate, AccountInfo } from '@/types/accounts';
 import { AccountService } from '@/services/account-service';
 import { CustomerService } from '@/services/customer-service';
+import BankAccountListItem from '../accounts/AccountListItem';
 
 const CustomerProfile: React.FC<{ customerId: number }> = ({ customerId }) => {
 	const [isNewAccountModalOpen, setIsNewAccountModalOpen] = useState(false);
@@ -100,44 +100,10 @@ const CustomerProfile: React.FC<{ customerId: number }> = ({ customerId }) => {
 
 						<div className='divide-y divide-gray-200'>
 							{accounts.map((account) => (
-								<div
+								<BankAccountListItem
 									key={account.id}
-									className='p-6'
-								>
-									<div className='flex justify-between items-center'>
-										<div>
-											<h4 className='text-lg font-medium text-gray-900'>
-												{account.name}
-											</h4>
-											<dl className='mt-2 text-sm text-gray-500'>
-												<div className='flex gap-4'>
-													<div>
-														<dt className='inline'>Account Number: </dt>
-														<dd className='inline'>{account.account_number}</dd>
-													</div>
-													<div>
-														<dt className='inline'>Routing Number: </dt>
-														<dd className='inline'>{account.routing_number}</dd>
-													</div>
-												</div>
-											</dl>
-										</div>
-
-										<div className='text-right'>
-											<div className='text-2xl font-semibold text-gray-900'>
-												View Account Balance
-											</div>
-											<div className='mt-2 flex gap-2 justify-end'>
-												<Link
-													href={`/accounts/${account.id}`}
-													className='px-3 py-1 text-sm text-blue-600 hover:text-blue-700'
-												>
-													View Transfer History
-												</Link>
-											</div>
-										</div>
-									</div>
-								</div>
+									account={account}
+								/>
 							))}
 						</div>
 					</div>

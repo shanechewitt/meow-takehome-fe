@@ -46,4 +46,30 @@ export class AccountService {
 			throw error;
 		}
 	}
+
+	static async getBalance(
+		account_number: string,
+		routing_number: string
+	): Promise<string> {
+		try {
+			const response = await fetch(
+				`${API_URL}/accounts/get-balance/${account_number}?routing_number=${routing_number}`,
+				{
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				}
+			);
+
+			if (!response.ok) {
+				throw new Error('Failed to get account balance');
+			}
+
+			return await response.json();
+		} catch (error) {
+			console.error('Error getting account balance: ', error);
+			throw error;
+		}
+	}
 }

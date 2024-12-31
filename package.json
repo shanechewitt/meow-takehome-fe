@@ -7,8 +7,10 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint",
-		"test": "jest",
-		"test:watch": "jest --watch"
+		"test": "jest --silent --noStackTrace",
+		"test:watch": "jest --silent --noStackTrace --watch",
+		"test:verbose": "jest --verbose",
+		"test:coverage": "jest --coverage --silent"
 	},
 	"dependencies": {
 		"lucide-react": "^0.469.0",

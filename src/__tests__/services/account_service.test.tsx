@@ -112,4 +112,34 @@ describe('AccountService', () => {
 			);
 		});
 	});
+	describe('getBalance', () => {
+		it('should get account balance', async () => {
+			// Arrange
+			const mockAccountNumber = '111111111111';
+			const mockRoutingNumber = '999999999';
+			(fetch as jest.Mock).mockResolvedValueOnce({
+				ok: true,
+				json: () => Promise.resolve(100.05),
+			});
+			// Act
+			const result = await AccountService.getBalance(
+				mockAccountNumber,
+				mockRoutingNumber
+			);
+			// Assert
+			expect(result).toEqual(100.05);
+		});
+		it('should handle API error', async () => {
+			// Arrange
+			const mockAccountNumber = '111111111111';
+			const mockRoutingNumber = '999999999';
+			(fetch as jest.Mock).mockResolvedValueOnce({
+				ok: false,
+			});
+			// Act, Assert
+			await expect(
+				AccountService.getBalance(mockAccountNumber, mockRoutingNumber)
+			).rejects.toThrow('Failed to get account balance');
+		});
+	});
 });
