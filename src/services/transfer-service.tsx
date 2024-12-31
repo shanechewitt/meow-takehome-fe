@@ -25,11 +25,11 @@ export class TransferService {
 	}
 
 	static async getTransferHistory(
-		accountNumber: string
+		account_number: string
 	): Promise<TransferListItem[]> {
 		try {
 			const response = await fetch(
-				`${API_URL}/transfers/transfer-history/${accountNumber}`,
+				`${API_URL}/transfers/transfer-history/${account_number}`,
 				{
 					method: 'GET',
 					headers: {

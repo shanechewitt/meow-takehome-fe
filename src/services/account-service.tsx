@@ -50,7 +50,7 @@ export class AccountService {
 	static async getBalance(
 		account_number: string,
 		routing_number: string
-	): Promise<string> {
+	): Promise<number> {
 		try {
 			const response = await fetch(
 				`${API_URL}/accounts/get-balance/${account_number}?routing_number=${routing_number}`,

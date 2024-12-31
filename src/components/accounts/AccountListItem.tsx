@@ -6,10 +6,19 @@ import { useState } from 'react';
 const BankAccountListItem: React.FC<{ account: AccountInfo }> = ({
 	account,
 }) => {
-	const [balance, setBalance] = useState<string>('');
+	const [balance, setBalance] = useState<number | null>(null);
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+
+	const formatBalance = (amount: number) => {
+		return new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: 'USD',
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2,
+		}).format(amount);
+	};
 
 	const fetchBalance = async () => {
 		try {
@@ -49,8 +58,8 @@ const BankAccountListItem: React.FC<{ account: AccountInfo }> = ({
 						{isLoading ? (
 							<span>Loading...</span>
 						) : balance ? (
-							<div className='flex items-center gap-2'>
-								<span>${balance}</span>
+							<div className='flex items-center justify-end gap-2'>
+								<span>{formatBalance(balance)}</span>
 								<button
 									onClick={fetchBalance}
 									className='text-sm text-blue-600 hover:text-blue-700'
@@ -70,7 +79,7 @@ const BankAccountListItem: React.FC<{ account: AccountInfo }> = ({
 					{error && <div className='text-sm text-red-600'>{error}</div>}
 					<div className='mt-2 flex gap-2 justify-end'>
 						<Link
-							href={`/accounts/${account.id}`}
+							href={`/accounts/${account.account_number}`}
 							className='px-3 py-1 text-sm text-blue-600 hover:text-blue-700'
 						>
 							View Transfer History

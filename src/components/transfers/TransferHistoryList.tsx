@@ -1,21 +1,8 @@
 import React from 'react';
 import TransferHistoryListItem from './TransferHistoryListItem';
+import { TransferListItem } from '@/types/transfers';
 
-interface Transfer {
-	id: string;
-	date: string;
-	amount: number;
-	fromAccount: string;
-	toAccount: string;
-	description: string;
-	status: 'Failed' | 'Success';
-}
-
-interface TransferHistoryListProps {
-	transfers: Transfer[];
-}
-
-const TransferHistoryList: React.FC<TransferHistoryListProps> = ({
+const TransferHistoryList: React.FC<{ transfers: TransferListItem[] }> = ({
 	transfers,
 }) => {
 	return (
@@ -38,7 +25,7 @@ const TransferHistoryList: React.FC<TransferHistoryListProps> = ({
 					<tbody className='text-sm text-gray-900 divide-y divide-gray-200'>
 						{transfers.map((transfer) => (
 							<TransferHistoryListItem
-								key={transfer.id}
+								key={transfer.transfer_amount}
 								transfer={transfer}
 							/>
 						))}

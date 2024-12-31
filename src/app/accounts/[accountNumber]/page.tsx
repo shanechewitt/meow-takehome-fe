@@ -3,10 +3,14 @@ import React from 'react';
 
 interface AccountPageProps {
 	params: {
-		id: string;
+		accountNumber: string;
 	};
 }
 
 export default function AccountPage({ params }: AccountPageProps) {
-	return <BankAccount />;
+	if (!params.accountNumber) {
+		return <div>Invalid customer ID</div>;
+	}
+
+	return <BankAccount params={params} />;
 }
