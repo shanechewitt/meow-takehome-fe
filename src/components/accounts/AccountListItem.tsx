@@ -57,7 +57,7 @@ const BankAccountListItem: React.FC<{ account: AccountInfo }> = ({
 					<div className='text-2xl font-semibold text-gray-900'>
 						{isLoading ? (
 							<span>Loading...</span>
-						) : balance ? (
+						) : balance !== null ? (
 							<div className='flex items-center justify-end gap-2'>
 								<span>{formatBalance(balance)}</span>
 								<button
