@@ -68,6 +68,16 @@ describe('CustomerService', () => {
 			// Act
 			const result = await CustomerService.create({ name: 'Test Customer' });
 			// Assert
+			expect(fetch).toHaveBeenCalledWith(
+				`http://localhost:8000/api/customers/create`,
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({ name: 'Test Customer' }),
+				}
+			);
 			expect(result).toEqual(mockCustomer);
 		});
 		it('should handle API error', async () => {
@@ -79,6 +89,44 @@ describe('CustomerService', () => {
 			await expect(
 				CustomerService.create({ name: 'Test Customer' })
 			).rejects.toThrow('Failed to create customer');
+		});
+	});
+
+	describe('info', () => {
+		it('should get customer info', async () => {
+			// Arrange
+			const mockCustomerId = 1;
+			const mockCustomerInfo = {
+				name: 'Test Customer',
+			};
+			(fetch as jest.Mock).mockResolvedValueOnce({
+				ok: true,
+				json: () => Promise.resolve(mockCustomerInfo),
+			});
+			// Act
+			const result = await CustomerService.get(mockCustomerId);
+			// Assert
+			expect(result).toEqual(mockCustomerInfo);
+			expect(fetch).toHaveBeenCalledWith(
+				`http://localhost:8000/api/customers/info/${mockCustomerId}`,
+				{
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				}
+			);
+		});
+		it('should handle API error', async () => {
+			// Arrange
+			const mockCustomerId = 1;
+			(fetch as jest.Mock).mockResolvedValueOnce({
+				ok: false,
+			});
+			// Act, Asssert
+			await expect(CustomerService.get(mockCustomerId)).rejects.toThrow(
+				'Failed to get customer info'
+			);
 		});
 	});
 });

@@ -1,54 +1,83 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import NewAccountModal from '../accounts/NewAccountModal';
+import { AccountCreate, AccountInfo } from '@/types/accounts';
+import { AccountService } from '@/services/account-service';
+import { CustomerService } from '@/services/customer-service';
 
-const mockCustomerData = {
-	id: '1',
-	name: 'Shane Hewitt',
-	accounts: [
-		{
-			id: '1',
-			name: 'Business 1',
-			balance: 1000000,
-			accountNumber: '****1234',
-			routingNumber: '****5678',
-		},
-		{
-			id: '2',
-			name: 'Business 1',
-			balance: 1000000,
-			accountNumber: '****5678',
-			routingNumber: '****1234',
-		},
-		{
-			id: '3',
-			name: 'Business 1',
-			balance: 1000000,
-			accountNumber: '****9012',
-			routingNumber: '****3456',
-		},
-		{
-			id: '4',
-			name: 'Business 1',
-			balance: 1000000,
-			accountNumber: '****3456',
-			routingNumber: '****9012',
-		},
-	],
-};
-
-const CustomerProfile: React.FC = () => {
+const CustomerProfile: React.FC<{ customerId: number }> = ({ customerId }) => {
 	const [isNewAccountModalOpen, setIsNewAccountModalOpen] = useState(false);
+	const [customerInfo, setCustomerInfo] = useState({ name: '' });
+	const [accounts, setAccounts] = useState<AccountInfo[]>([]);
+
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+
+	const handleCreateAccount = async (accountData: {
+		name: string;
+		initialAmount: number;
+	}) => {
+		try {
+			setIsLoading(true);
+			const accountCreate: AccountCreate = {
+				customer_id: customerId,
+				name: accountData.name,
+				initial_amount: accountData.initialAmount,
+			};
+			await AccountService.create(accountCreate);
+			await fetchAccounts();
+		} catch (error) {
+			setError(
+				error instanceof Error ? error.message : 'Failed to create customer'
+			);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const fetchAccounts = async () => {
+		try {
+			setIsLoading(true);
+			const accountsData = await AccountService.getAccounts(customerId);
+			setAccounts(accountsData);
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'Failed to load accounts');
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const fetchCustomerData = async () => {
+		try {
+			setIsLoading(true);
+
+			// First API call
+			const customerData = await CustomerService.get(customerId);
+			setCustomerInfo(customerData);
+
+			await fetchAccounts();
+		} catch (err) {
+			setError(
+				err instanceof Error ? err.message : 'Failed to load customer data'
+			);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		fetchCustomerData();
+	}, [customerId]);
 
 	return (
 		<div className='min-h-screen bg-gray-100'>
 			<div className='p-8'>
 				<div className='mb-8'>
 					<h2 className='text-2xl font-semibold text-gray-900'>
-						{mockCustomerData.name}
+						{customerInfo.name}
 					</h2>
 				</div>
 
@@ -70,7 +99,7 @@ const CustomerProfile: React.FC = () => {
 						</div>
 
 						<div className='divide-y divide-gray-200'>
-							{mockCustomerData.accounts.map((account) => (
+							{accounts.map((account) => (
 								<div
 									key={account.id}
 									className='p-6'
@@ -84,11 +113,11 @@ const CustomerProfile: React.FC = () => {
 												<div className='flex gap-4'>
 													<div>
 														<dt className='inline'>Account Number: </dt>
-														<dd className='inline'>{account.accountNumber}</dd>
+														<dd className='inline'>{account.account_number}</dd>
 													</div>
 													<div>
 														<dt className='inline'>Routing Number: </dt>
-														<dd className='inline'>{account.routingNumber}</dd>
+														<dd className='inline'>{account.routing_number}</dd>
 													</div>
 												</div>
 											</dl>
@@ -96,20 +125,14 @@ const CustomerProfile: React.FC = () => {
 
 										<div className='text-right'>
 											<div className='text-2xl font-semibold text-gray-900'>
-												${account.balance.toLocaleString()}
+												View Account Balance
 											</div>
 											<div className='mt-2 flex gap-2 justify-end'>
-												<button className='px-3 py-1 text-sm text-blue-600 hover:text-blue-700'>
-													Transfer into this account
-												</button>
-												<button className='px-3 py-1 text-sm text-blue-600 hover:text-blue-700'>
-													Transfer from this account
-												</button>
 												<Link
 													href={`/accounts/${account.id}`}
 													className='px-3 py-1 text-sm text-blue-600 hover:text-blue-700'
 												>
-													View Account
+													View Transfer History
 												</Link>
 											</div>
 										</div>
@@ -124,10 +147,7 @@ const CustomerProfile: React.FC = () => {
 			<NewAccountModal
 				isOpen={isNewAccountModalOpen}
 				onClose={() => setIsNewAccountModalOpen(false)}
-				onSubmit={(accountData) => {
-					console.log('Creating account:', accountData);
-					setIsNewAccountModalOpen(false);
-				}}
+				onSubmit={handleCreateAccount}
 			/>
 		</div>
 	);

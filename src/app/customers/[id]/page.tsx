@@ -8,5 +8,11 @@ interface CustomerPageProps {
 }
 
 export default function CustomerPage({ params }: CustomerPageProps) {
-	return <CustomerProfile />;
+	const customerId = parseInt(params.id);
+
+	if (isNaN(customerId)) {
+		return <div>Invalid customer ID</div>;
+	}
+
+	return <CustomerProfile customerId={customerId} />;
 }

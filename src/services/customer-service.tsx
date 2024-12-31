@@ -1,4 +1,4 @@
-import { Customer } from '@/types/customers';
+import { Customer, CustomerInfo } from '@/types/customers';
 
 const API_URL = 'http://localhost:8000/api';
 
@@ -40,6 +40,26 @@ export class CustomerService {
 			return await response.json();
 		} catch (error) {
 			console.error('Error creating customer: ', error);
+			throw error;
+		}
+	}
+
+	static async get(customerId: number): Promise<CustomerInfo> {
+		try {
+			const response = await fetch(`${API_URL}/customers/info/${customerId}`, {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			});
+
+			if (!response.ok) {
+				throw new Error('Failed to get customer info');
+			}
+
+			return await response.json();
+		} catch (error) {
+			console.error('Error getting customer info: ', error);
 			throw error;
 		}
 	}
