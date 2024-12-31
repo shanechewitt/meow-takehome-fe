@@ -5,8 +5,6 @@ interface CustomerListItemProps {
 	customer: {
 		id: string;
 		name: string;
-		numberOfAccounts: number;
-		totalAccountValue: number;
 	};
 }
 
@@ -17,15 +15,6 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer }) => {
 				<h3 className='text-lg font-medium text-gray-900'>{customer.name}</h3>
 			</div>
 			<div className='flex items-center gap-8'>
-				<div className='w-32 text-center text-sm text-gray-600'>
-					<span className='font-medium'>{customer.numberOfAccounts}</span>{' '}
-					accounts
-				</div>
-				<div className='w-32 text-center text-sm text-gray-600'>
-					<span className='font-medium'>
-						${customer.totalAccountValue.toLocaleString()}
-					</span>
-				</div>
 				<Link
 					href={`/customers/${customer.id}`}
 					className='w-32 text-center px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md'

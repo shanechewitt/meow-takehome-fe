@@ -1,45 +1,32 @@
 'use client';
 
-import React, { useState } from 'react';
-import CustomerListItem from './CustomerListItem';
+import React, { useEffect, useState } from 'react';
 import { PlusCircle } from 'lucide-react';
 import CustomerCreateModal from './CreateCustomerModal';
-
-const mockCustomers = [
-	{
-		id: '1',
-		name: 'Shane Hewitt',
-		numberOfAccounts: 6,
-		totalAccountValue: 1000000,
-	},
-	{
-		id: '2',
-		name: 'Jane Smith',
-		numberOfAccounts: 3,
-		totalAccountValue: 750000,
-	},
-	{
-		id: '3',
-		name: 'Robert Johnson',
-		numberOfAccounts: 4,
-		totalAccountValue: 1250000,
-	},
-];
+import { CustomerService } from '@/services/customer-service';
+import { Customer } from '@/types/customers';
+import CustomerListItem from './CustomerListItem';
 
 const CustomerList: React.FC = () => {
 	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-	const [customers, setCustomers] = useState(mockCustomers);
+	const [customers, setCustomers] = useState<Customer[]>([]);
 
 	const handleCreateCustomer = (customerData: { name: string }) => {
-		const newCustomer = {
-			id: (customers.length + 1).toString(),
-			name: customerData.name,
-			numberOfAccounts: 0,
-			totalAccountValue: 0,
+		// const newCustomer = {
+		// 	id: (customers.length + 1).toString(),
+		// 	name: customerData.name,
+		// };
+		// setCustomers([...customers, newCustomer]);
+	};
+
+	useEffect(() => {
+		const fetchData = async () => {
+			const response = await CustomerService.getCustomerList();
+			setCustomers(response);
 		};
 
-		setCustomers([...customers, newCustomer]);
-	};
+		fetchData();
+	}, []);
 
 	return (
 		<div className='px-8 py-16'>
@@ -61,15 +48,13 @@ const CustomerList: React.FC = () => {
 					<div className='flex justify-between text-sm font-medium text-gray-500'>
 						<div>Customer Name</div>
 						<div className='flex gap-8'>
-							<div className='w-32 text-center'>Accounts</div>
-							<div className='w-32 text-center'>Total Value</div>
 							<div className='w-32'></div>
 						</div>
 					</div>
 				</div>
 
 				<div className='divide-y divide-gray-200'>
-					{mockCustomers.map((customer) => (
+					{customers.map((customer) => (
 						<CustomerListItem
 							key={customer.id}
 							customer={customer}
