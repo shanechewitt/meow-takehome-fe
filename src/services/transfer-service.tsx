@@ -18,7 +18,6 @@ export class TransferService {
 
 			if (!response.ok) {
 				const errorResponse = await response.json();
-				console.log(errorResponse);
 				throw new Error(errorResponse.detail || 'Failed to create transfer');
 			}
 
