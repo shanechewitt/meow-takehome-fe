@@ -1,6 +1,9 @@
 import { Customer, CustomerInfo } from '@/types/customers';
 
-const API_URL = 'http://localhost:8000/api';
+const API_URL =
+	process.env.NEXT_PUBLIC_DEVELOPMENT_MODE === 'production'
+		? process.env.NEXT_PUBLIC_PRODUCTION_API
+		: process.env.NEXT_PUBLIC_DEVELOPMENT_API;
 
 export class CustomerService {
 	static async getCustomerList(): Promise<Customer[]> {

@@ -2,6 +2,11 @@ import { CustomerService } from '@/services/customer-service';
 
 global.fetch = jest.fn();
 
+const API_URL =
+	process.env.NEXT_PUBLIC_DEVELOPMENT_MODE === 'production'
+		? process.env.NEXT_PUBLIC_PRODUCTION_API
+		: process.env.NEXT_PUBLIC_DEVELOPMENT_API;
+
 describe('CustomerService', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -29,15 +34,12 @@ describe('CustomerService', () => {
 			const result = await CustomerService.getCustomerList();
 
 			// Assert
-			expect(fetch).toHaveBeenCalledWith(
-				`http://localhost:8000/api/customers/customer-list`,
-				{
-					method: 'GET',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-				}
-			);
+			expect(fetch).toHaveBeenCalledWith(`${API_URL}/customers/customer-list`, {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			});
 
 			expect(result).toEqual(mockCustomerList);
 		});
@@ -68,16 +70,13 @@ describe('CustomerService', () => {
 			// Act
 			const result = await CustomerService.create({ name: 'Test Customer' });
 			// Assert
-			expect(fetch).toHaveBeenCalledWith(
-				`http://localhost:8000/api/customers/create`,
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({ name: 'Test Customer' }),
-				}
-			);
+			expect(fetch).toHaveBeenCalledWith(`${API_URL}/customers/create`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ name: 'Test Customer' }),
+			});
 			expect(result).toEqual(mockCustomer);
 		});
 		it('should handle API error', async () => {
@@ -108,7 +107,7 @@ describe('CustomerService', () => {
 			// Assert
 			expect(result).toEqual(mockCustomerInfo);
 			expect(fetch).toHaveBeenCalledWith(
-				`http://localhost:8000/api/customers/info/${mockCustomerId}`,
+				`${API_URL}/customers/info/${mockCustomerId}`,
 				{
 					method: 'GET',
 					headers: {

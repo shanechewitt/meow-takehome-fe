@@ -3,6 +3,11 @@ import { TransferCreate } from '@/types/transfers';
 
 global.fetch = jest.fn();
 
+const API_URL =
+	process.env.NEXT_PUBLIC_DEVELOPMENT_MODE === 'production'
+		? process.env.NEXT_PUBLIC_PRODUCTION_API
+		: process.env.NEXT_PUBLIC_DEVELOPMENT_API;
+
 describe('TransferService', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -25,16 +30,13 @@ describe('TransferService', () => {
 
 			const result = await TransferService.createTransfer(mockTransferData);
 
-			expect(fetch).toHaveBeenCalledWith(
-				'http://localhost:8000/api/transfers/create',
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(mockTransferData),
-				}
-			);
+			expect(fetch).toHaveBeenCalledWith(`${API_URL}/transfers/create`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(mockTransferData),
+			});
 
 			expect(result).toBe('Transfer created successfully');
 		});
@@ -74,7 +76,7 @@ describe('TransferService', () => {
 
 			// Verify fetch was called correctly
 			expect(fetch).toHaveBeenCalledWith(
-				`http://localhost:8000/api/transfers/transfer-history/${mockAccountNumber}`,
+				`${API_URL}/transfers/transfer-history/${mockAccountNumber}`,
 				{
 					method: 'GET',
 					headers: {

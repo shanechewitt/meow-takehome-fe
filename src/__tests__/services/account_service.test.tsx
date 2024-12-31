@@ -2,6 +2,11 @@ import { AccountService } from '@/services/account-service';
 
 global.fetch = jest.fn();
 
+const API_URL =
+	process.env.NEXT_PUBLIC_DEVELOPMENT_MODE === 'production'
+		? process.env.NEXT_PUBLIC_PRODUCTION_API
+		: process.env.NEXT_PUBLIC_DEVELOPMENT_API;
+
 describe('AccountService', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -30,16 +35,13 @@ describe('AccountService', () => {
 			// Act
 			const result = await AccountService.create(mockRequest);
 			// Assert
-			expect(fetch).toHaveBeenCalledWith(
-				`http://localhost:8000/api/accounts/create`,
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(mockRequest),
-				}
-			);
+			expect(fetch).toHaveBeenCalledWith(`${API_URL}/accounts/create`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(mockRequest),
+			});
 			expect(result).toEqual(mockAccount);
 		});
 		it('should handle API error', async () => {
@@ -90,7 +92,7 @@ describe('AccountService', () => {
 			const result = await AccountService.getAccounts(mockCustomerId);
 			// Assert
 			expect(fetch).toHaveBeenCalledWith(
-				`http://localhost:8000/api/accounts/accounts-list/${mockCustomerId}`,
+				`${API_URL}/accounts/accounts-list/${mockCustomerId}`,
 				{
 					method: 'GET',
 					headers: {
@@ -127,6 +129,15 @@ describe('AccountService', () => {
 				mockRoutingNumber
 			);
 			// Assert
+			expect(fetch).toHaveBeenCalledWith(
+				`${API_URL}/accounts/get-balance/${mockAccountNumber}?routing_number=${mockRoutingNumber}`,
+				{
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				}
+			);
 			expect(result).toEqual(100.05);
 		});
 		it('should handle API error', async () => {

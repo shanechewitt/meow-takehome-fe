@@ -1,6 +1,9 @@
 import { AccountInfo, AccountCreate } from '@/types/accounts';
 
-const API_URL = 'http://localhost:8000/api';
+const API_URL =
+	process.env.NEXT_PUBLIC_DEVELOPMENT_MODE === 'production'
+		? process.env.NEXT_PUBLIC_PRODUCTION_API
+		: process.env.NEXT_PUBLIC_DEVELOPMENT_API;
 
 export class AccountService {
 	static async create(accountData: AccountCreate): Promise<AccountInfo> {
